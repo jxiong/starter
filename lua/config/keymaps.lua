@@ -10,9 +10,11 @@ current mode. However, pressing control-backslash-control-n to get out of
 Terminal mode can be awkward. To make the <Esc> key have the same effect in
 Terminal mode, a snippet of Vim script can be put into the vimrc file.
 This snippet is:
---]]
 vim.keymap.set("t", "<C-x>", "<C-\\><C-n>")
+-- Update: by default, <ESC><ESC> is mapped to "<C-\\><C-n>" and now <C-x> is mapped
+-- to close a buffer. Therefore, this is not needed any more.
 -- Pressing 'i' again will go back to the insert mode.
+--]]
 
 vim.keymap.set("n", "<C-x>", "<leader>bd", { desc = "Close the Current Buffer", remap = true })
 
@@ -27,7 +29,7 @@ require("telescope").setup({
     --[[
     prompt_position = "top",
     sorting_strategy = "ascending",
-    --]]
+    -]]
     file_previewer = require("telescope.previewers").vim_buffer_cat.new,
     grep_previewer = require("telescope.previewers").vim_buffer_vimgrep.new,
     qflist_previewer = require("telescope.previewers").vim_buffer_qflist.new,
@@ -40,3 +42,19 @@ require("telescope").setup({
     },
   },
 })
+
+vim.keymap.set("n", "<leader>/", require("telescope.builtin").grep_string, {})
+
+local cmp = require("cmp")
+cmp.setup({
+  mapping = cmp.mapping.preset.insert({
+    -- My config
+    ["<CR>"] = cmp.mapping.confirm({ select = false }), -- 'select = false' to only confirm explicitly selected item
+    ["<S-CR>"] = cmp.mapping.confirm({ select = false, behavior = cmp.ConfirmBehavior.Replace }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+
+    -- LazyVim defaults
+    ["<C-j>"] = cmp.mapping.select_next_item({ select = false, behavior = cmp.SelectBehavior.Select }),
+    ["<C-k>"] = cmp.mapping.select_prev_item({ select = false, behavior = cmp.SelectBehavior.Select }),
+  }),
+})
+
